@@ -5,7 +5,61 @@ body {
 a {
   color: #00B7FF;
 }
+video.clip {
+  opacity: 0.5;
+}
+#animate_prompt_container {
+  width: 108px;
+  height: 432px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+.animate_option {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  background: #0000ff;
+  border: solid 2px;
+  text-align: center;
+}
+#explosion_label {
+  position: absolute;
+  right: 420px;
+  top: 273px;
+  font: 55px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+#action_prompt {
+  position: absolute;
+  right: 420px;
+  top: 273px;
+  font: 55px "Lucida Grande", Helvetica, Arial, sans-serif;
+  z-index: 100;
+}
+.clip_container {
+  position: absolute;
+  z-index: 0;
+  width: 120px;
+}
+.central {
+  position: relative;
+}
+#explosive_output {
+  position: fixed;
+  width: 1000px;
+  height: 600px;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+#output {
+  position: relative;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+}
 #webcam_stream {
+  display: none;
   position: absolute;
   top: 10px;
   right: 10px;
@@ -19,6 +73,13 @@ a {
   top: 20px;
   right: 20px;
   color: white;
+  z-index: 999;
+}
+.countdown {
+  position: absolute;
+  top: 40px;
+  right: 50%;
+  color: black;
   z-index: 999;
 }
 #conversation {

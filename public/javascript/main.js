@@ -5,6 +5,8 @@
 
   var cur_video_blob = null;
   var fb_instance;
+  var mediaRecorder;
+  var explosion_label = "";
 
   $(document).ready(function(){
     connect_to_chat_firebase();
@@ -39,7 +41,7 @@
     });
 
     // block until username is answered
-    var username = window.prompt("Welcome, warrior! please declare your name?");
+    var username = window.prompt("Welcome! please enter a username");
     if(!username){
       username = "anonymous"+Math.floor(Math.random()*1111);
     }
@@ -49,8 +51,29 @@
     // bind submission box
     $("#submission input").keydown(function( event ) {
       if (event.which == 13) {
-        if(has_emotions($(this).val())){
-          fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blob, c: my_color});
+        var value = $(this).val();
+        if(has_emotions(value)){
+
+          var is_animated = false;
+          var animate = true;
+          var num = 1;
+
+          animate_prompt(value);
+
+          setTimeout(function(){
+
+            if(animate){
+               mediaRecorder.start(3000);
+                var curr_this = $(this);
+
+              setTimeout(function(curr_this) {
+                fb_instance_stream.push({m:username+": " +value, v:cur_video_blob, c: my_color});
+              }, 3500);
+            }else{
+
+            }
+          }, 0);
+
         }else{
           fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
         }
@@ -63,15 +86,58 @@
     scroll_to_bottom(1300);
   }
 
+  function animate_prompt(value){
+    var animate_option = document.createElement('div');
+    animate_option.className = 'animate_option';
+    $(animate_option).text("animate" + value);
+    document.getElementById('animate_prompt_container').appendChild(animate_option);
+    $(animate_option).fadeOut(3000, function(){
+      animate_option.remove();
+    });
+  }
+
   // creates a message node and appends it to the conversation
   function display_msg(data){
     $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+data.m+"</div>");
     if(data.v){
       // for video element
+      var video_container = document.createElement("div");
+      video_container.className = 'clip_container';
       var video = document.createElement("video");
-      video.autoplay = true;
+      var countdown = document.createElement("div");
+      countdown.className = 'countdown';
+      var start_time = 5;
+      var countdown_update = setInterval(function(){
+        countdown.innerHTML = start_time--;
+      },1000);
+      video.autoplay = false;
       video.controls = false; // optional
-      video.loop = true;
+      video.loop = false;
+      video.className = 'clip';
+
+      $(video).on('ended', function(event) {
+          console.log("ENDED");
+          $('#explosion_label').text(explosion_label);
+          $(video).fadeOut(1000, function(){
+            video_container.remove();
+          });
+          dropBomb();
+          $('#output').fadeOut(1000, function(){
+            $('#explosion_label').text("");
+          });
+      });
+
+      $(video).on("click", function(){
+        init(this);
+        $('#output').fadeIn(0);
+        $(this).unbind('click');
+        countdown.remove();
+        if($(this).is(':animated')) {
+           $(this).stop().animate({opacity:'0.5'});
+        }
+        this.play();
+      });
+
       video.width = 120;
 
       var source = document.createElement("source");
@@ -84,8 +150,12 @@
       // var video = document.createElement("img");
       // video.src = URL.createObjectURL(base64_to_blob(data.v));
 
-      document.getElementById("conversation").appendChild(video);
-    }
+      video_container.appendChild(countdown);
+      video_container.appendChild(video);
+      document.getElementById("conversation").appendChild(video_container);    }
+      $(video).fadeOut(6000, function(){
+        video_container.remove();
+      });
   }
 
   function scroll_to_bottom(wait_time){
@@ -120,17 +190,9 @@
       video.play();
       webcam_stream.appendChild(video);
 
-      // counter
-      var time = 0;
-      var second_counter = document.getElementById('second_counter');
-      var second_counter_update = setInterval(function(){
-        second_counter.innerHTML = time++;
-      },1000);
-
       // now record stream in 5 seconds interval
       var video_container = document.getElementById('video_container');
-      var mediaRecorder = new MediaStreamRecorder(stream);
-      var index = 1;
+      mediaRecorder = new MediaStreamRecorder(stream);
 
       mediaRecorder.mimeType = 'video/webm';
       // mediaRecorder.mimeType = 'image/gif';
@@ -141,16 +203,13 @@
       mediaRecorder.ondataavailable = function (blob) {
           //console.log("new data available!");
           video_container.innerHTML = "";
+          console.log("blobbed");
 
           // convert data into base 64 blocks
           blob_to_base64(blob,function(b64_data){
             cur_video_blob = b64_data;
           });
       };
-      setInterval( function() {
-        mediaRecorder.stop();
-        mediaRecorder.start(3000);
-      }, 3000 );
       console.log("connect to media stream!");
     }
 
@@ -168,10 +227,39 @@
     var options = ["lol",":)",":("];
     for(var i=0;i<options.length;i++){
       if(msg.indexOf(options[i])!= -1){
+        if( i == 0) {
+          explosion_label = "LOL";
+          add_prompt('lol');
+        }else if(i == 1){
+          explosion_label = ":)";
+          add_prompt(':)');
+        }else{
+          explosion_label = ":(";
+          add_prompt(':(');
+        }
         return true;
       }
     }
     return false;
+  }
+
+  function add_prompt(type){
+    var label = type;
+    var prompt = document.createElement('span');
+    prompt.id = 'action_prompt';
+    console.log(prompt);
+    if(type.indexOf('lol') != -1){
+      $(prompt).text("LOL for the camera!");
+    }else if(type.indexOf(':)') != -1){
+      console.log("smile prompt");
+      $(prompt).text("SMILE for the camera!");
+    }else if(type.indexOf(':(') != -1){
+      $(prompt).text("SADFACE for the camera!");
+    }
+    document.body.appendChild(prompt);
+    $(prompt).delay(3000).fadeOut(0, function(){
+      prompt.remove();
+    });
   }
 
 
