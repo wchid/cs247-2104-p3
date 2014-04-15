@@ -100,6 +100,7 @@
   function display_msg(data){
     $("#conversation").append("<div class='msg' style='color:"+data.c+"'>"+data.m+"</div>");
     if(data.v){
+
       // for video element
       var video_container = document.createElement("div");
       video_container.className = 'clip_container';
@@ -128,6 +129,21 @@
       });
 
       $(video).on("click", function(){
+
+        // set explosion label
+        var options = ["lol",":)",":("];
+        for(var i=0;i<options.length;i++){
+          if(data.m.indexOf(options[i])!= -1){
+            if( i == 0) {
+              explosion_label = "LOL";
+            }else if(i == 1){
+              explosion_label = ":)";
+            }else{
+              explosion_label = ":(";
+            }
+          }
+        }
+
         init(this);
         $('#output').fadeIn(0);
         $(this).unbind('click');
@@ -228,13 +244,10 @@
     for(var i=0;i<options.length;i++){
       if(msg.indexOf(options[i])!= -1){
         if( i == 0) {
-          explosion_label = "LOL";
           add_prompt('lol');
         }else if(i == 1){
-          explosion_label = ":)";
           add_prompt(':)');
         }else{
-          explosion_label = ":(";
           add_prompt(':(');
         }
         return true;
