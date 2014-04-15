@@ -7,6 +7,7 @@
   var fb_instance;
   var mediaRecorder;
   var explosion_label = "";
+  var video_input;
 
   $(document).ready(function(){
     connect_to_chat_firebase();
@@ -194,20 +195,20 @@
       var video_width= 160;
       var video_height= 120;
       var webcam_stream = document.getElementById('webcam_stream');
-      var video = document.createElement('video');
+      video_input = document.createElement('video');
       webcam_stream.innerHTML = "";
       // adds these properties to the video
-      video = mergeProps(video, {
+      video_input = mergeProps(video_input, {
           controls: false,
           width: video_width,
           height: video_height,
           src: URL.createObjectURL(stream)
       });
-      video.play();
-      webcam_stream.appendChild(video);
+      video_input.play();
+      webcam_stream.appendChild(video_input);
 
       // now record stream in 5 seconds interval
-      var video_container = document.getElementById('video_container');
+      //var video_container = document.getElementById('video_container');
       mediaRecorder = new MediaStreamRecorder(stream);
 
       mediaRecorder.mimeType = 'video/webm';
@@ -218,8 +219,7 @@
 
       mediaRecorder.ondataavailable = function (blob) {
           //console.log("new data available!");
-          video_container.innerHTML = "";
-          console.log("blobbed");
+          //video_container.innerHTML = "";
 
           // convert data into base 64 blocks
           blob_to_base64(blob,function(b64_data){
@@ -227,6 +227,7 @@
           });
       };
       console.log("connect to media stream!");
+
     }
 
     // callback if there is an error when we try and get the video stream

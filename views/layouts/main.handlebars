@@ -10,6 +10,8 @@
     <script src='javascript/main.js'></script>
     <script type="text/javascript">
 
+ //borrowed largely from http://craftymind.com/factory/html5video/CanvasVideo.html
+
 var video_source;
 var copy;
 var copycanvas;
@@ -62,14 +64,14 @@ function processFrame(){
 			createTiles();
 		}
 		//this is to keep my sanity while developing
-		if(randomJump){
-			randomJump = false;
-			video_source.currentTime = Math.random()*video_source.duration;
-		}
+		//if(randomJump){
+		//	randomJump = false;
+		//	video_source.currentTime = Math.random()*video_source.duration;
+		//}
 		//loop
-		if(video_source.currentTime == video_source.duration){
-			video_source.currentTime = 0;
-		}
+		//if(video_source.currentTime == video_source.duration){
+		//	video_source.currentTime = 0;
+		//}
 	}
 	var debugStr = "";
 	//copy tiles
